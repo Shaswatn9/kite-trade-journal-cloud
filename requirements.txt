@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+kiteconnect
+gspread
+google-auth
+google-auth-oauthlib
+python-dotenv
+pytz
