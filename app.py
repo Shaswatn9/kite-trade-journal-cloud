@@ -4,6 +4,11 @@ def start_ticker(self, access_token):
 
     def on_connect(ws, resp):
         print("[listener] Connected. Waiting for order updates...")
+        try:
+        ws.subscribe_orders()  # ✅ Subscribes to order updates
+        print("[listener] Subscribed to order updates")
+    except Exception as e:
+        print("[listener] subscribe_orders failed:", e)
 
     def on_order_update(ws, data):
         try:
@@ -81,8 +86,10 @@ def start_ticker(self, access_token):
         try:
             # if ws attribute missing or socket closed, break to restart
             if not getattr(ticker, "ws", None) or not getattr(ticker.ws, "sock", None) or not ticker.ws.sock.connected:
+                print("[listener] detected disconnect; breaking to restart")
                 break
         except Exception:
             break
         time.sleep(2)
+
 
