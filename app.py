@@ -9,6 +9,9 @@ import os
 from threading import Thread
 from fastapi.responses import RedirectResponse, PlainTextResponse, JSONResponse
 from kiteconnect import KiteConnect, KiteTicker
+import kiteconnect  # add this
+
+print("[listener] kiteconnect version:", kiteconnect.__version__)  # add this
 
 API_KEY = os.environ["KITE_API_KEY"]
 API_SECRET = os.environ["KITE_API_SECRET"]
@@ -54,13 +57,18 @@ def start_ticker(self, access_token):
     kite = KiteConnect(api_key=API_KEY)
     kite.set_access_token(access_token)
 
-    def on_connect(ws, resp):
-        print("[listener] Connected. Waiting for order updates...")
-        try:
-            ws.subscribe_orders()  # ✅ Subscribes to order updates
-            print("[listener] Subscribed to order updates")
-        except Exception as e:
-            print("[listener] subscribe_orders failed:", e)
+def on_connect(ws, resp):
+    print("[listener] Connected. Waiting for order updates...")
+    try:
+        # Handle both method names across KiteConnect versions
+        if hasattr(ws, "subscribe_order_updates"):
+            ws.subscribe_order_updates()
+            print("[listener] Subscribed via subscribe_order_updates()")
+        else:
+            ws.subscribe_orders()
+            print("[listener] Subscribed via subscribe_orders()")
+    except Exception as e:
+        print("[listener] subscribe failed:", e)
 
     def on_order_update(ws, data):
         try:
@@ -148,6 +156,7 @@ def start_ticker(self, access_token):
         except Exception:
             break
         time.sleep(2)
+
 
 
 
