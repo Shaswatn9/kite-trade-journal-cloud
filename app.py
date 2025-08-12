@@ -5,6 +5,51 @@ app = FastAPI()
 @app.get("/")
 def root():
     return {"status": "ok"}
+import os
+from threading import Thread
+from fastapi.responses import RedirectResponse, PlainTextResponse, JSONResponse
+from kiteconnect import KiteConnect
+
+API_KEY = os.environ["KITE_API_KEY"]
+API_SECRET = os.environ["KITE_API_SECRET"]
+
+_access_token = None
+_listener_active = False
+
+def _run_listener(token):
+    global _listener_active
+    _listener_active = True
+    try:
+        # Adjust to call your existing listener
+        self_obj = type("OrderListener", (), {"stop_flag": False, "start_ticker": start_ticker})()
+        self_obj.start_ticker(token)
+    finally:
+        _listener_active = False
+
+@app.get("/login")
+def login():
+    kite = KiteConnect(api_key=API_KEY)
+    return RedirectResponse(url=kite.login_url())
+
+@app.get("/callback")
+def callback(request_token: str):
+    global _access_token
+    kite = KiteConnect(api_key=API_KEY)
+    data = kite.generate_session(request_token=request_token, api_secret=API_SECRET)
+    _access_token = data["access_token"]
+
+    if not _listener_active:
+        t = Thread(target=_run_listener, args=(_access_token,), daemon=True)
+        t.start()
+
+    return PlainTextResponse("Access token saved. Listener started.")
+
+@app.get("/status")
+def status():
+    return JSONResponse({
+        "token_loaded": bool(_access_token),
+        "listener_active": _listener_active
+    })
 def start_ticker(self, access_token):
     kite = KiteConnect(api_key=API_KEY)
     kite.set_access_token(access_token)
@@ -98,6 +143,7 @@ def start_ticker(self, access_token):
         except Exception:
             break
         time.sleep(2)
+
 
 
 
