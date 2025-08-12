@@ -8,7 +8,7 @@ def root():
 import os
 from threading import Thread
 from fastapi.responses import RedirectResponse, PlainTextResponse, JSONResponse
-from kiteconnect import KiteConnect
+from kiteconnect import KiteConnect, KiteTicker
 
 API_KEY = os.environ["KITE_API_KEY"]
 API_SECRET = os.environ["KITE_API_SECRET"]
@@ -143,6 +143,7 @@ def start_ticker(self, access_token):
         except Exception:
             break
         time.sleep(2)
+
 
 
 
