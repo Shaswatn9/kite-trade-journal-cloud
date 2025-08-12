@@ -7,8 +7,8 @@ def start_ticker(self, access_token):
         try:
             ws.subscribe_orders()  # ✅ Subscribes to order updates
             print("[listener] Subscribed to order updates")
-    except Exception as e:
-        print("[listener] subscribe_orders failed:", e)
+        except Exception as e:
+            print("[listener] subscribe_orders failed:", e)
 
     def on_order_update(ws, data):
         try:
@@ -91,6 +91,7 @@ def start_ticker(self, access_token):
         except Exception:
             break
         time.sleep(2)
+
 
 
 
