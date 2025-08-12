@@ -1,3 +1,10 @@
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def root():
+    return {"status": "ok"}
 def start_ticker(self, access_token):
     kite = KiteConnect(api_key=API_KEY)
     kite.set_access_token(access_token)
@@ -91,6 +98,7 @@ def start_ticker(self, access_token):
         except Exception:
             break
         time.sleep(2)
+
 
 
 
