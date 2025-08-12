@@ -123,7 +123,12 @@ def start_ticker(self, access_token):
         # Don't raise SystemExit here; let the loop below notice the disconnect
         print("[listener] websocket closed:", code, reason)
 
-    ticker = KiteTicker(API_KEY, access_token,reconnect=True,reconnect_tries=100,reconnect_delay=5)
+    ticker = KiteTicker(
+        API_KEY, access_token,
+        reconnect=True,
+        reconnect_max_tries=100,
+        reconnect_max_delay=5
+    )
     ticker.on_connect = on_connect
     ticker.on_close   = on_close
     ticker.on_error   = on_error
@@ -143,6 +148,7 @@ def start_ticker(self, access_token):
         except Exception:
             break
         time.sleep(2)
+
 
 
 
